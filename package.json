@@ -1,0 +1,15 @@
+{
+  "name": "oily-monkey",
+  "version": "1.0.0",
+  "description": "Rock with injecting user script but simpler!",
+  "main": "index.js",
+  "scripts": {
+    "build": "./build.sh"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chrome": "^0.0.243"
+  }
+}
