@@ -2,6 +2,9 @@ import { getAppState } from '../store.js'
 
 async function main() {
 
+    chrome.action.onClicked.addListener(async () => {
+        await chrome.runtime.openOptionsPage()
+    })
 
     chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         const state = await getAppState()

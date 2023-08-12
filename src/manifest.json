@@ -20,9 +20,8 @@
     "open_in_tab": true
   },
   "action": {
-    "default_icon": "icon-64.png",
     "default_title": "Oily Monkey",
-    "default_popup": "popup/index.html"
+    "default_icon": "icon-64.png"
   },
   "icons": {
     "48": "icon-256.png"
