@@ -1,10 +1,18 @@
 import { getAppState } from '../store.js'
 
+function injectScript({ url }) {
+    const scriptRef = document.createElement('script')
+    scriptRef.src = url
+    scriptRef.type = 'module'
+    document.head.appendChild(scriptRef)
+}
+
 async function main() {
 
     chrome.action.onClicked.addListener(async () => {
         await chrome.runtime.openOptionsPage()
     })
+
 
     chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         const state = await getAppState()
@@ -18,12 +26,7 @@ async function main() {
             target: {
                 tabId: sender.tab.id,
             },
-            func: function (config) {
-                const scriptRef = document.createElement('script')
-                scriptRef.src = config.url
-                scriptRef.type = 'module'
-                document.head.appendChild(scriptRef)
-            },
+            func: injectScript,
             args: [config],
             world: 'MAIN',
         })

@@ -5,4 +5,5 @@ if [ -f oily-monkey.zip ]; then
     rm oily-monkey.zip
 fi
 
-zip -r oily-monkey.zip src/*
+cd src
+zip -r ../oily-monkey.zip *
