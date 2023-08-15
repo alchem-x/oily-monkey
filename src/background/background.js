@@ -1,47 +1,59 @@
 import { getAppState } from '../store.js'
 
-function injectScript({ url }) {
+function applyInjectScript({ url }) {
     const scriptRef = document.createElement('script')
     scriptRef.src = url
     scriptRef.type = 'module'
     document.head.appendChild(scriptRef)
 }
 
-async function main() {
-
-    chrome.action.onClicked.addListener(async () => {
-        await chrome.runtime.openOptionsPage()
+async function onInjectScript({ tabId, url }) {
+    const state = await getAppState()
+    const config = state.configList.find((it) => {
+        return new RegExp(it.pattern).test(url);
     })
+    if (!config) {
+        return
+    }
+    await chrome.scripting.executeScript({
+        target: {
+            tabId,
+        },
+        func: applyInjectScript,
+        args: [config],
+        world: 'MAIN',
+    })
+}
 
+async function onClickAction(ev) {
+    await onInjectScript({
+        tabId: ev.id,
+        url: ev.url
+    })
+}
 
-    chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-        const state = await getAppState()
-        const config = state.configList.find((it) => {
-            return new RegExp(it.pattern).test(sender.url);
-        })
-        if (!config) {
-            return
+async function onDoubleClickAction(ev) {
+    await chrome.runtime.openOptionsPage()
+}
+
+function createOnClickListener() {
+    let timer = 0
+    return async function (ev) {
+        if (timer) {
+            clearTimeout(timer)
+            timer = 0
+            await onDoubleClickAction(ev)
+        } else {
+            timer = setTimeout(async () => {
+                await onClickAction(ev)
+                timer = 0
+            }, 500)
         }
-        await chrome.scripting.executeScript({
-            target: {
-                tabId: sender.tab.id,
-            },
-            func: injectScript,
-            args: [config],
-            world: 'MAIN',
-        })
-    })
+    }
+}
 
-    chrome.scripting
-        .registerContentScripts([{
-            id: 'user-script',
-            js: ['user_script.js'],
-            persistAcrossSessions: false,
-            matches: ['*://*/*'],
-            runAt: 'document_idle',
-        }])
-        .then(() => console.log('registration complete'))
-        .catch((err) => console.warn('unexpected error', err))
+async function main() {
+    chrome.action.onClicked.addListener(createOnClickListener())
 }
 
 main().catch((err) => console.error(err))
