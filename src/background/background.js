@@ -1,10 +1,30 @@
 import { getAppState } from '../store.js'
 
 function injectScript({ url }) {
+    console.log('Inject ' + new Date().getTime())
     const scriptRef = document.createElement('script')
     scriptRef.src = url
     scriptRef.type = 'module'
     document.head.appendChild(scriptRef)
+}
+
+async function disableCSP({ url, tabId }) {
+    const currentSessionRules = await chrome.declarativeNetRequest.getSessionRules()
+    if (currentSessionRules.some((it) => it.id === tabId)) {
+        return
+    }
+    const addRules = [{
+        id: tabId,
+        action: {
+            type: 'modifyHeaders',
+            responseHeaders: [{ header: 'content-security-policy', operation: 'set', value: '' }]
+        },
+        condition: {
+            urlFilter: url,
+            resourceTypes: ['main_frame', 'sub_frame'],
+        }
+    }]
+    await chrome.declarativeNetRequest.updateSessionRules({ addRules, })
 }
 
 async function onInjectScript({ tabId, url }) {
@@ -15,10 +35,9 @@ async function onInjectScript({ tabId, url }) {
     if (!config) {
         return
     }
+    await disableCSP({ url, tabId })
     await chrome.scripting.executeScript({
-        target: {
-            tabId,
-        },
+        target: { tabId },
         func: injectScript,
         args: [config],
         world: 'MAIN',
@@ -27,8 +46,13 @@ async function onInjectScript({ tabId, url }) {
 
 async function applyRegisterContentScripts() {
     try {
+        const contentScriptsId = 'oily-monkey-user-script'
+        const registeredContentScripts = await chrome.scripting.getRegisteredContentScripts({ ids: [contentScriptsId] })
+        if (registeredContentScripts.length) {
+            return
+        }
         await chrome.scripting.registerContentScripts([{
-            id: 'user-script',
+            id: contentScriptsId,
             js: ['user_script.js'],
             persistAcrossSessions: false,
             matches: ['*://*/*'],
