@@ -1,7 +1,6 @@
 import { getAppState } from '../store.js'
 
 function injectScript({ url }) {
-    console.log('Inject ' + new Date().getTime())
     const scriptRef = document.createElement('script')
     scriptRef.src = url
     scriptRef.type = 'module'
@@ -42,6 +41,7 @@ async function onInjectScript({ tabId, url }) {
         args: [config],
         world: 'MAIN',
     })
+    console.info('Apply user script', config.name)
 }
 
 async function applyRegisterContentScripts() {
@@ -58,9 +58,9 @@ async function applyRegisterContentScripts() {
             matches: ['*://*/*'],
             runAt: 'document_idle',
         }])
-        console.log('registration complete')
+        console.info('Registration complete', contentScriptsId)
     } catch (err) {
-        console.warn('unexpected error', err)
+        console.warn('Unexpected error', err)
     }
 }
 
