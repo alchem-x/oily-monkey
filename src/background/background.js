@@ -44,26 +44,6 @@ async function onInjectScript({ tabId, url }) {
     console.info('Apply user script', config.name)
 }
 
-async function applyRegisterContentScripts() {
-    try {
-        const contentScriptsId = 'oily-monkey-user-script'
-        const registeredContentScripts = await chrome.scripting.getRegisteredContentScripts({ ids: [contentScriptsId] })
-        if (registeredContentScripts.length) {
-            return
-        }
-        await chrome.scripting.registerContentScripts([{
-            id: contentScriptsId,
-            js: ['user_script.js'],
-            persistAcrossSessions: false,
-            matches: ['*://*/*'],
-            runAt: 'document_idle',
-        }])
-        console.info('Registration complete', contentScriptsId)
-    } catch (err) {
-        console.warn('Unexpected error', err)
-    }
-}
-
 async function main() {
     chrome.action.onClicked.addListener(async () => {
         await chrome.runtime.openOptionsPage()
@@ -72,8 +52,6 @@ async function main() {
     chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         await onInjectScript({ tabId: sender.tab.id, url: sender.url, })
     })
-
-    await applyRegisterContentScripts()
 }
 
 main().catch((err) => console.error(err))

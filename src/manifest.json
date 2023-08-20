@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Oily Monkey",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Rock with injecting user script but simpler!",
   "homepage_url": "https://github.com/alchemy-works/oily-monkey",
   "background": {
@@ -15,6 +15,16 @@
   ],
   "host_permissions": [
     "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "user_script.js"
+      ]
+    }
   ],
   "options_ui": {
     "page": "options/index.html",
