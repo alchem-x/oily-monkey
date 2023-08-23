@@ -2,6 +2,7 @@ import Config from './options/Config.js'
 
 export const STORE_KEY = {
     APP_STATE: 'APP_STATE',
+    ENABLED: 'TRUE',
 }
 
 async function getItem(key) {
@@ -10,10 +11,6 @@ async function getItem(key) {
 
 async function setItem(key, value) {
     await chrome.storage.local.set({ [key]: value })
-}
-
-export async function setAppState(state) {
-    await setItem(STORE_KEY.APP_STATE, JSON.stringify(state))
 }
 
 function getDefaultAppState() {
@@ -36,4 +33,16 @@ export async function getAppState() {
         return JSON.parse(val.toString())
     }
     return getDefaultAppState()
+}
+
+export async function setAppState(state) {
+    await setItem(STORE_KEY.APP_STATE, JSON.stringify(state))
+}
+
+export async function setEnabled(enabled) {
+    await setItem(STORE_KEY.ENABLED, enabled ? 'TRUE' : 'FALSE')
+}
+
+export async function getEnabled() {
+    return await getItem(STORE_KEY.ENABLED) === 'TRUE'
 }

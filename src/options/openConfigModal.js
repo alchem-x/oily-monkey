@@ -3,7 +3,7 @@ import Config from './Config.js'
 import HelpIcon from './HelpIcon.js'
 
 const ClassName = css`
-  min-width: 540px;
+  min-width: 640px;
 
   .form-row {
     :not(:first-child) {

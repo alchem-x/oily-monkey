@@ -1,4 +1,4 @@
-import { getAppState } from '../store.js'
+import { getAppState, getEnabled } from '../store.js'
 
 function injectScript({ url }) {
     const scriptRef = document.createElement('script')
@@ -27,6 +27,10 @@ async function disableCSP({ url, tabId }) {
 }
 
 async function onInjectScript({ tabId, url }) {
+    const enabled = await getEnabled()
+    if (!enabled) {
+        return
+    }
     const state = await getAppState()
     const config = state.configList.find((it) => {
         return new RegExp(it.pattern).test(url);
