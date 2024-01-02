@@ -3,64 +3,66 @@ import openConfigModal from './openConfigModal.js'
 import Config from './Config.js'
 
 const ClassName = css`
-  margin-top: 1rem;
+    margin-top: 1rem;
 
-  .th-operate {
-    width: 100px;
-  }
+    .th-operate {
+        width: 100px;
+    }
 
-  .th-title {
-    width: 150px;
-    text-align: left;
-  }
+    .th-title {
+        width: 150px;
+        text-align: left;
+    }
 
-  .td-operate {
-    text-align: center;
-  }
+    .td-operate {
+        text-align: center;
+    }
 
-  .td-empty {
-    text-align: center;
-  }
+    .td-empty {
+        text-align: center;
+    }
 
-  .title {
-    color: #4c5161;
-    font-weight: bold;
-  }
+    .title {
+        color: #4c5161;
+        font-weight: bold;
+    }
 
-  .description {
-    color: #a2a9b6;
-  }
+    .description {
+        color: #a2a9b6;
+    }
 `
 
 export default class ConfigTable extends Component {
 
-    constructor({ onStateChange }) {
-        super()
-        this.onClickEdit = (ev) => {
-            openConfigModal({
-                config: ev,
-                onEdit: (ev) => {
-                    onStateChange((prevState) => {
-                        return {
-                            ...prevState,
-                            configList: prevState.configList.map((it) => {
-                                return it.id === ev.id ? new Config(ev) : it
-                            }),
-                        }
-                    })
-                },
-                onDelete: () => {
-                    onStateChange((prevState) => {
-                        return {
-                            ...prevState,
-                            configList: prevState.configList.filter((it) => {
-                                return it.id !== ev.id
-                            }),
-                        }
-                    })
-                }
-            })
-        }
+    constructor(props) {
+        super(props)
+    }
+
+    onClickEditButton(ev) {
+        const { onStateChange } = this.props
+        openConfigModal({
+            config: ev,
+            onEdit: (ev) => {
+                onStateChange((prevState) => {
+                    return {
+                        ...prevState,
+                        configList: prevState.configList.map((it) => {
+                            return it.id === ev.id ? new Config(ev) : it
+                        }),
+                    }
+                })
+            },
+            onDelete: () => {
+                onStateChange((prevState) => {
+                    return {
+                        ...prevState,
+                        configList: prevState.configList.filter((it) => {
+                            return it.id !== ev.id
+                        }),
+                    }
+                })
+            }
+        })
     }
 
     render({ state }) {
@@ -84,7 +86,7 @@ export default class ConfigTable extends Component {
                                     <div class="description">${it.description}</div>
                                 </td>
                                 <td>
-                                    <button class="ui-button" onClick="${() => this.onClickEdit(it)}">
+                                    <button class="ui-button" onClick="${() => this.onClickEditButton(it)}">
                                         Edit
                                     </button>
                                 </td>

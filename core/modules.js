@@ -1,15 +1,20 @@
-import lu2_animate from './third_party/lu2/animate.css' assert { type: 'css' }
-import lu2_ui from './third_party/lu2/ui.css' assert { type: 'css' }
-import './third_party/emotion-css.umd.min.js'
-import './third_party/preact.min.umd.js'
-import './third_party/htm.umd.js'
-import './third_party/lu2/safari-polyfill.js'
-import './third_party/lu2/all.js'
+import { loadCss, loadJs } from './load.js'
 
-document.adoptedStyleSheets = [lu2_animate, lu2_ui]
+await loadCss(new URL('./deps/lu2/animate.css', import.meta.url).toString())
+await loadCss(new URL('./deps/lu2/ui.css', import.meta.url).toString())
 
-export const { h, render, Component } = window.preact
-export const html = window.htm.bind(h);
-export const { css, cx } = window.emotion
-export const Dialog = window.Dialog
-export const LightTip = window.LightTip
+await loadJs(new URL('./deps/emotion-css.umd.min.js', import.meta.url).toString())
+await loadJs(new URL('./deps/preact.min.umd.js', import.meta.url).toString())
+await loadJs(new URL('./deps/htm.umd.js', import.meta.url).toString())
+await loadJs(new URL('./deps/lu2/safari-polyfill.js', import.meta.url).toString())
+await loadJs(new URL('./deps/lu2/all.js', import.meta.url).toString())
+
+export const getGlobalModule = (name) => window[name] || {}
+
+export const { h, render, Component } = getGlobalModule('preact')
+
+const htm = getGlobalModule('htm')
+export const html = htm.bind(h);
+export const { css, cx } = getGlobalModule('emotion')
+export const Dialog = getGlobalModule('Dialog')
+export const LightTip = getGlobalModule('LightTip')

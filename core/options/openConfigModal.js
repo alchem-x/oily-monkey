@@ -3,61 +3,63 @@ import Config from './Config.js'
 import HelpIcon from './HelpIcon.js'
 
 const ClassName = css`
-  min-width: 640px;
+    min-width: 640px;
 
-  .form-row {
-    :not(:first-child) {
-      margin-top: .5rem;
+    .form-row {
+        :not(:first-child) {
+            margin-top: .5rem;
+        }
+
+        display: flex;
+        align-items: center;
+
+        label {
+            min-width: 90px;
+            display: flex;
+            align-items: center;
+            gap: 1px;
+        }
+
+        input {
+            flex: 1;
+        }
+
+        textarea {
+            flex: 1;
+            resize: vertical;
+        }
     }
 
-    display: flex;
-    align-items: center;
-
-    label {
-      min-width: 90px;
-      display: flex;
-      align-items: center;
-      gap: 1px;
+    .red {
+        color: #eb4646;
     }
-
-    input {
-      flex: 1;
-    }
-
-    textarea {
-      flex: 1;
-      resize: vertical;
-    }
-  }
-
-  .red {
-    color: #eb4646;
-  }
 `
 
 class ConfigModalBody extends Component {
 
-    constructor({ config, onApply }) {
-        super()
-        this.state = new Config(config)
-        this.onChange = (name, value) => {
-            this.setState((prevState) => {
-                return {
-                    ...prevState,
-                    [name]: value,
-                }
-            })
-        }
+    constructor(props) {
+        super(props)
+        this.state = new Config(props.config)
+    }
 
-        this.onSubmit = (ev) => {
-            ev.preventDefault()
-            onApply(this.state)
-        }
+    onChange(name, value) {
+        this.setState((prevState) => {
+            return {
+                ...prevState,
+                [name]: value,
+            }
+        })
+    }
+
+    onSubmit(ev) {
+        const { onApply } = this.props
+        ev.preventDefault()
+        onApply(this.state)
     }
 
     render(props, { name, pattern, url, description }) {
         return html`
-            <form id="config-form" class="${cx('ui-form', ClassName)}" onSubmit="${this.onSubmit}">
+            <form id="config-form" class="${cx('ui-form', ClassName)}" onSubmit="${(ev) => this.onSubmit(ev)}">
                 <div class="form-row">
                     <label for="config-name"><span>Name</span><span class="red">*</span></label>
                     <input value="${name}" onInput="${(ev) => this.onChange('name', ev.target.value)}"
